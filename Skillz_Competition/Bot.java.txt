@@ -1,0 +1,212 @@
+﻿package bots;
+import pirates.*;
+import java.util.*;
+
+/**
+ * This is an example for a bot.
+ */
+public class MyBot implements PirateBot {
+
+    /**
+     * Makes the bot run a single turn
+     */
+     private int nextTarget;
+     private boolean isRight;
+     private Location enemyBase;
+     private Location myBase;
+     private int kamikazaSide;
+    @Override
+    public void doTurn(PirateGame game) {
+        if (game.getTurn() == 1){
+            this.nextTarget = 1;
+            this.isRight = (game.getMyCities().get(0) == game.getAllCities().get(1));
+            this.enemyBase = game.getAllCities().get(isRight? 0: 1).location;
+            this.myBase = game.getAllCities().get(isRight? 1: 0).location;
+            this.myBase = new Location(myBase.row, myBase.col + (isRight? -3: 3));
+            this.kamikazaSide = 0;
+        }
+        game.debug("unload: " + game.getUnloadRange());
+        game.debug("unload: " + game.getAttackRange());
+        // Give orders to my pirates
+        handlePirates(game);
+        // Give orders to my drones
+        handleDrones(game);
+    }
+    
+    private boolean tryAttack(PirateGame game, Pirate pirate) {
+        // Go over all enemies
+        for (Aircraft enemy : game.getEnemyLivingAircrafts()) {
+            // Check if the enemy is in attack range
+            if (pirate.inAttackRange(enemy)) {
+                // Fire!
+                game.attack(pirate, enemy);
+            // Print a message
+                game.debug("pirate " + pirate + " attacks " + enemy);
+                // Did attack
+                return true;
+            }
+        }
+    
+        // Didnt attack
+        return false;
+    }
+    
+    private boolean tryAttackDrone(PirateGame game, Pirate pirate) {
+        // Go over all enemies
+        for (Drone enemy : game.getEnemyLivingDrones()) {
+            // Check if the enemy is in attack range
+            if (pirate.inAttackRange(enemy)) {
+                // Fire!
+                game.attack(pirate, enemy);
+            // Print a message
+                game.debug("pirate " + pirate + " attacks " + enemy);
+                // Did attack
+                return true;
+            }
+        }
+    
+        // Didnt attack
+        return false;
+    }
+    
+    private boolean tryAttackPirate(PirateGame game, Pirate pirate) {
+        // Go over all enemies
+        for (Pirate enemy : game.getEnemyLivingPirates()) {
+            // Check if the enemy is in attack range
+            if (pirate.inAttackRange(enemy)) {
+                // Fire!
+                game.attack(pirate, enemy);
+            // Print a message
+                game.debug("pirate " + pirate + " attacks " + enemy);
+                // Did attack
+                return true;
+            }
+        }
+    
+        // Didnt attack
+        return false;
+    }
+
+    
+    private void handlePirates(PirateGame game) {
+        //kamikaza
+        Pirate kamikaza = game.getAllMyPirates().get(0);
+        if (kamikaza.isAlive()){
+            if(!tryAttackDrone(game, kamikaza)){
+                if(!tryAttackPirate(game, kamikaza)){
+                    goTo(game, kamikaza, kamikazaPlace(game));
+                }
+            }
+        }
+        
+        //defender
+        Pirate defender = game.getAllMyPirates().get(1);
+        if (defender.isAlive()){
+            if(!tryAttackPirate(game, defender)){
+                goTo(game, defender, myBase);
+            }
+        }
+        
+        
+        if (this.nextTarget(game).owner == game.getMyself()){
+            this.nextTarget = chooseTarget(game, game.getAllMyPirates().get(2));
+        }
+        for (int i = 2; i < 5; i++) {
+            if (!game.getAllMyPirates().get(i).isAlive()){
+                continue;
+            }
+            if (!tryAttack(game, game.getAllMyPirates().get(i))) {
+                // Get the first island
+                Island destination = this.nextTarget(game);
+                goTo(game, game.getAllMyPirates().get(i), destination);
+                /* Get sail options
+                List<Location> sailOptions = game.getSailOptions(game.getAllMyPirates().get(i), destination);
+                // Set sail!
+                game.setSail(game.getAllMyPirates().get(i), sailOptions.get(0));
+                // Print a message*/
+            }
+        }
+    }
+    
+    private void handleDrones(PirateGame game) 
+    {
+        // Go over all of my drones
+        for (Drone drone : game.getMyLivingDrones()) {
+            // Get my first city
+            City destination = game.getMyCities().get(0);
+            goTo(game, drone, destination);
+        }
+    }
+    
+    private Island nextTarget(PirateGame game){
+        return game.getAllIslands().get(this.nextTarget);
+    }
+    
+    private int chooseTarget(PirateGame game, Pirate pirate){
+        if(game.getEnemyIslands().size() != 0){
+            return closestTarget(game, pirate, game.getEnemyIslands()).id;
+        }
+        if(game.getNeutralIslands().size() != 0){
+            return closestTarget(game, pirate, game.getNeutralIslands()).id;
+        }
+        return closestTarget(game, pirate, game.getAllIslands()).id;
+    }
+    
+    private Island closestTarget(PirateGame game, Pirate pirate, List<Island> targets){
+        Island currClosest = targets.get(0);
+        for (Island target: targets){
+            if (pirate.location.distance(target) > pirate.location.distance(currClosest)){
+                currClosest = target;
+            }
+        }
+        return currClosest;
+    }
+    
+    private void goTo(PirateGame game, Aircraft vehicle, MapObject destination){
+        // Get sail options
+        List<Location> sailOptions = game.getSailOptions(vehicle, destination);
+        // Set sail!
+        Random rnd = new Random();
+        game.setSail(vehicle, sailOptions.get(rnd.nextInt(sailOptions.size())));
+    }
+    
+    private Location kamikazaPlace(PirateGame game){
+        return kamikazaPlace(game, this.maxDroneDest(game));
+    }
+    
+    private Location kamikazaPlace(PirateGame game, int side){
+        switch (side){
+            case 0: return new Location(enemyBase.row, enemyBase.col + (isRight? 2: -2));
+            case 1: return new Location(enemyBase.row - 2, enemyBase.col);
+            case 2: return new Location(enemyBase.row, enemyBase.col + (isRight? -2: 2));
+            case 3: return new Location(enemyBase.row + 2, enemyBase.col);
+        }
+        return null;
+    }
+    
+    private int droneDest(PirateGame game, Drone drone){
+        int curr = 0;
+        for (int i = 0; i < 4; i++){
+            int dist = drone.distance(kamikazaPlace(game, i));
+            curr = (dist < drone.distance(kamikazaPlace(game, curr)))? i: curr;
+        }
+        return curr;
+    }
+    
+    private int maxDroneDest(PirateGame game){
+        int[] sides = new int[]{0, 0, 0, 0};
+        for (Drone d: game.getEnemyLivingDrones()){
+            if (d.distance(enemyBase) > 8){
+                continue;
+            }
+            sides[droneDest(game, d)] += 1;
+        }
+        int ret = 0;
+        for (int i = 0; i < 4; i++){
+            if (sides[i] > sides[ret]){
+                ret = i;
+            }
+        }
+        return ret;
+    }
+}
