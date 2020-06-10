@@ -2,27 +2,43 @@ import os
 from osgeo import ogr
 from PyScripts import CreateFishnetGrid
 
-
-#  Essence: Calculate the relative position of the point with respect to polygon
-# Inputs:
-# • XY of the point
-# • input layer path= Polygon objects layer (street layer)
-# • Center coordinates (float\int) of source feature (building)
-
-
-# Outputs:
-#return tuple with:
-# ---- 1 -----
-# • Relative direction word (string type)
-# Method: Divide the polygon into 9 cells (Fishnet) and examine them
-# *** The function adds a new column to source layer, indicating the direction
-# of each polygon which intersects with input point
-# ---- 2 -----
-# the street name (string type)
-
-#output in hebrew:
-# צפון מזרח, מזרח, דרום מזרח, צפון, מרכז, דרום, צפון מערב, מערב, דרום מערב
 def Directional_9 (input_layer_path, pointX,pointY):
+    """
+    Essence
+    -------
+    Function calculates the relative position of the point with respect to polygon
+
+    Inputes
+    -------
+    :param input_layer_path: Polygon objects layer (street layer), .shp file format
+    :type String
+
+    :param pointX: The X value of out object
+    :type float
+
+    :param pointY: The Y value of out object
+    :type float
+
+    Returns
+    --------
+
+    :return:
+    return tuple with:
+    ---- 1 -----
+    • Relative direction word (string type)
+
+    output in hebrew:
+צפון מזרח, מזרח, דרום מזרח, צפון, מרכז, דרום, צפון מערב, מערב, דרום מערב
+
+    Method: Divide the polygon into 9 cells (Fishnet) and examine them
+    The function adds a new column to source layer, indicating the direction
+    of each polygon which intersects with input point
+
+    ---- 2 -----
+    The street name (string type)
+
+    :type tuple (String,String)
+    """
     directions = ['בצפון מערב', 'במערב', 'בדרום מערב', 'בצפון', 'במרכז', 'בדרום' ,'בצפון מזרח', 'במזרח', 'בדרום מזרח']
 
     # for english output ---> ['North-East','East','Southeast','North','Center','South','North-West','West','South-West']

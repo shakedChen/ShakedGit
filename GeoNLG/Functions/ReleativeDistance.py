@@ -1,29 +1,42 @@
-import os
 from osgeo import ogr
 import math
-from collections import Counter
-from collections import OrderedDict
-from skfuzzy import fuzzy_or,trimf
 from scipy.spatial import distance
-import numpy as np
-
-#Essence: Gahegan Algorithm - tests the distance between 2 objects in space
-# (close, far, very far, etc.)
-# by measuring considering the other elements around it and using the Fuzzy function
-
-#  Inputs:
-# • Target Object XY (TO).
-# • Point coords (temp coords) from source layer
-# • Relative Objects layer - n objects in it, (Point layer)
-# Outputs:
-#  preposition(string type) for interest points:
-# 0-0.1  very far
-# 0.1-0.3 far
-# 0.3-0.7 NULL
-# 0.7-0.9 close
-# 0.9-1 very close
 
 def RelativeDistance(input_layer_path,temp_coords,pointX,pointY):
+    """
+    Essence
+    -------
+    Gahegan Algorithm - tests the distance between 2 objects in space
+    (close, far, very far, etc.)
+    by measuring considering the other elements around it and using the Fuzzy function
+
+    Inputes
+    -------
+
+    :param input_layer_path: Building's interest points layer path .shp format
+    :type String
+
+    :param temp_coords: Selected interest point's coordinates
+    :type tuple (float,float)
+
+    :param pointX: The X value of the reference object
+    :type float
+
+    :param pointY: The Y value of the reference object
+    :type float
+
+    Returns
+    -------
+
+    :return: preposition for interest points:
+    • 0-0.1  very far
+    • 0.1-0.3 far
+    • 0.3-0.7 NULL
+    • 0.7-0.9 close
+    • 0.9-1 very close
+
+    :type String
+    """
 
     # opening reference objects layer, Point type
     daShapefile = input_layer_path

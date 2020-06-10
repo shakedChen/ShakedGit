@@ -1,19 +1,28 @@
-import os
 from osgeo import ogr
-import gdal
-from scipy.spatial import distance
 import pytess
-from shapely.ops import polygonize,unary_union
-import matplotlib.pyplot as plt
 from shapely.geometry import MultiPoint, Point, Polygon,MultiPolygon,LineString
 from scipy.spatial import Voronoi, voronoi_plot_2d
 import numpy as np
 import geopandas as gpd
-import geopandas as gpd
-#  creating dictionary of voronoi polygons geom
-#  function get list of coords tuples
 
 def voronoi_polygons_geom(layer_coords):
+    """
+    Essence
+    -------
+    Function creates dictionary of voronoi polygons geom
+
+    Inputes
+    -------
+
+    :param layer_coords: list of coords tuples
+    :type List of tuples [(),(),....]
+
+    Returns
+    -------
+
+    :return: list of voronoi areas
+    :type list of shapely.geometry Polygons
+    """
     voronoi_polys = pytess.voronoi(layer_coords)
     #key = coord, value = dis
     voronoi_areas = {}
