@@ -1,11 +1,8 @@
-from PyScripts import HeightToBuildingType
 from PyScripts import FloorsToHeight
 from PyScripts import Foundation_Year
 from PyScripts import Directional_9
 import geopandas as gpd
 
-import fiona
-from PyScripts import Km_Distance
 from PyScripts import Polygon_To_Centroid
 from PyScripts import Identify_All
 from PyScripts import ReleativeDistance
@@ -13,13 +10,10 @@ from PyScripts import Building_RelativePos
 from PyScripts import SelectCandidate
 from PyScripts import Find_N_Nearest_Neighbours
 from PyScripts import NewHeightToBuildingType
-from osgeo import ogr
-import os
-
 
 def main():
-    # inputes
-    #print(fiona.supported_drivers)
+
+    #Inputes
     output_path= 'output.xlsx'
     buildings_path= r'C:\Users\Shaked Chen\Desktop\Geo NLG\interest_layers\NEW30TestBuildings.gdb'
     road_path= r'C:\Users\Shaked Chen\Desktop\Geo NLG\Source_Layers\Roads.shp'
@@ -33,10 +27,10 @@ def main():
     floors_field='NUM_FLOORS'
     founding_field= 'year'
     cent_layer_name= 'Centroid.shp'
-    interest_places_name= 'NEW_Combined_Interest_Points.shp'
+    interest_places_name= r'C:\Users\Shaked Chen\Desktop\Final_Output\Interest_Points\New_Combined_Interest_Points.shp'
 
 
-    # creating p
+    # creating centroids layer from source buildings layer
     centroids= Polygon_To_Centroid.Polygon_To_Centroid(input_layer_path=buildings_path, output_path=cent_layer_name)
 
     table = gpd.read_file(buildings_path, driver="OpenFileGDB", errors='ignore',encode = 'utf-8',layer=0)
@@ -46,7 +40,6 @@ def main():
     table['y'] = None
     table['id'] = None
 
-    # print(fiona.supported_drivers)
     centroid_table= gpd.read_file(cent_layer_name, driver="ESRI Shapefile", errors='ignore',encode = 'utf-8')
 
     interest_places_table = gpd.read_file(interest_places_name, driver="ESRI Shapefile", errors='ignore', encode='utf-8')

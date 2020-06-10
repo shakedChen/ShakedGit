@@ -1,13 +1,29 @@
 import geopandas as gpd
-import os
-# INPUTS -
-# layer's folder path
-# layers file name (.gdb)
-# fid of building
-
-# return string of foundation decade
 
 def Foundation_Year(input_layer_path,founding_Field_Name,fid):
+    """
+    Essence
+    -------
+    Function returns string of foundation decade for selected building from buildings layer
+
+    Inputes
+    -------
+
+    :param input_layer_path: Path of buildings layer (points layer) as .gdb file
+    :type String
+
+    :param founding_Field_Name: Founding feature name in Buildings layer
+    :type String
+
+    :param fid: Fid of selected building from Buildings layer
+    :type Integer
+
+    Returns
+    --------
+
+    :return: Foundation decade for selected building
+    :type String
+    """
 
     table = gpd.read_file(input_layer_path, encoding='utf-8',driver="OpenFileGDB", errors='ignore',layer=0)
 

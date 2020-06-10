@@ -1,10 +1,43 @@
-import os, sys
 from osgeo import ogr
 from math import ceil
 import osr
-#Create fishnet grid for each polygon (3X3)
-def CreateFishnetGrid(outputGridfn,xmin,xmax,ymin,ymax,gridHeight,gridWidth):
 
+def CreateFishnetGrid(outputGridfn,xmin,xmax,ymin,ymax,gridHeight,gridWidth):
+    """
+    Essence
+    -------
+    Function creates fishnet grid for each polygon (3X3)
+
+    Inputs
+    ------
+
+    :param outputGridfn: Output's save grid path (.shp file)
+    :type String
+
+    :param xmin: the x min value of object's bounds
+    :type float
+
+    :param xmax: the x max value of object's bounds
+    :type float
+
+    :param ymin: the y min value of object's bounds
+    :type float
+
+    :param ymax: the y max value of object's bounds
+    :type float
+
+    :param gridHeight: object's bounds height / 3
+    :type float
+
+    :param gridWidth: object's bounds width / 3
+    :type float
+
+    Returns
+    --------
+
+    :return: None
+    :type None
+    """
 
     # convert sys.argv to float
     xmin = float(xmin)

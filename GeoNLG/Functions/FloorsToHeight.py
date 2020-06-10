@@ -1,18 +1,30 @@
 import geopandas as gpd
-import os
-# INPUTS -
-# layer's folder path
-# layers file name (.shp)
-# output_path
-# fid of building
-
-
-
-#  By giving a numerical value of floors(int) for polygon objects (refers to buildings),
-#  function returns the height of each building (multiply the number of floors by 3m ),integer output
 
 def FloorsToHeight(input_layer_path,Floors_Field_Name,fid):
+    """
+    Essence
+    -------
+    By giving a numerical value of floors(int) for polygon objects (refers to buildings),
+    function returns the height of each building (multiply the number of floors by 3m )
 
+    Inputes
+    -------
+
+    :param input_layer_path:  Buildings layer path .gdb format
+    :type String
+
+    :param Floors_Field_Name: Floors feature name in Buildings layer
+    :type String
+
+    :param fid: Fid of selected building from Buildings layer
+    :type Integer
+
+    Returns
+    -------
+
+    :return: Selected Building's height
+    :type Integer
+    """
     # opening source gdb
     table = gpd.read_file(input_layer_path, encoding='utf-8',driver="OpenFileGDB", errors='ignore',layer=0)
 

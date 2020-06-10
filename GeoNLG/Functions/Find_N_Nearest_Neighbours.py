@@ -1,19 +1,39 @@
 from scipy.spatial import KDTree
 import geopandas as gpd
 import numpy as np
-import cv2
-# Essence \ Output
-# function create layer, containing interest points of point input (building center coordinates), and
-# the n closest points to input point, using KDTree algorithm
-
-# INPUTS ---->
-# x and y coordinates of input point (building center)
-# input point's layer name (including .shp), POINT type - interest points big layer (source buildings layer)
-# dict of interest points of source point
-# interest_points_num
-
 
 def N_Closest(x, y, layer_name, interest_point_dict, n):
+    """
+    Essence
+    -------
+    Function create layer, containing interest points of point input (building center coordinates), and
+    the n closest points to input point, using KDTree algorithm
+
+    Inputs
+    ------
+
+    :param x: the X value of input point (building's center)
+    :type float
+
+    :param y: the Y value of input point (building's center)
+    :type float
+
+    :param layer_name: Interest points layer path, as .shp format
+    :type String
+
+    :param interest_point_dict: Dictionary of interest points for our reference object
+    key= FID of interest point, from layer_name layer.  value= Interest point's coordinates
+    :type Dictionary {}
+
+    :param n: The number of output points
+    :type Integer
+
+    Returns
+    --------
+
+    :return: None
+    :type None
+    """
     # reading source layer
     table = gpd.read_file(layer_name, driver="ESRI Shapefile", errors='ignore', encode='utf-8')
     points_list = []
@@ -23,7 +43,6 @@ def N_Closest(x, y, layer_name, interest_point_dict, n):
 
     for key in interest_point_dict:
         dict_index.append(key)
-
     for index, row in table.iterrows():
         tempX = table.loc[index, 'geometry'].x
         tempY = table.loc[index, 'geometry'].y

@@ -1,17 +1,37 @@
 from osgeo import ogr
-import numpy as np
-import math
 from PyScripts import Find_Angle
-# Essence: Function returns the relative state between the buildings
-# Inputs:
-# • Road layer (Line) path
-# • Layer of buildings (points layer) path
-# • Two structures you want to examine (features FID of source point and coords of temp building center point)
-# Output:
-# • Relative mode (Front, Near, NULL)
+
 
 def Building_RelativePos(building_layer_path, road_layer_path,first_building_fid,tempX,tempY):
+    """
+    Essence
+    -------
+    Function returns the relative state between the buildings (None or Front)
 
+    Inputs
+    ------
+
+    :param building_layer_path: Path of buildings layer (points layer) as .gdb file
+    :type String
+
+    :param road_layer_path: Road layer (Line) path as .shp file
+    :type String
+
+    :param first_building_fid: The FID value of our reference object
+    :type Integer
+
+    :param tempX:
+    :type float
+
+    :param tempY: The Y value of the center coordinates of the object to which we want to make the reference
+    :type float
+
+    Returns
+    --------
+
+    :return: The relative state between the buildings (None or Front)
+    :type String
+    """
     # opening source input layer(buildings), Polygon type layer
     daShapefile = building_layer_path
     driver = ogr.GetDriverByName('OpenFileGDB')
@@ -60,7 +80,6 @@ def Building_RelativePos(building_layer_path, road_layer_path,first_building_fid
 
         if line.Touches(feature_geom):
             if feature_fid != first_building_fid and ((tempX,tempY) !=feature_geom.Centroid()):
-                print("touches")
                 return None
     source_layer.ResetReading()
 

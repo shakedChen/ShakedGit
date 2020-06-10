@@ -1,38 +1,43 @@
-import os
 from osgeo import ogr
 from scipy.spatial import distance
-from scipy.spatial import Voronoi
 from PyScripts import Voronoi_Polygons_Geom
-import osr
 from collections import Counter
 import math
 
-# Essence: Gong Algorithm - Performs an Intelligent Selection of a Minimal
-# Set of Candidate References for Object Description
-
-# Inputs:
-
-# • Target Object XY (TO).
-# • input layer path- A layer of reference objects (Point type)(.shp)
-# •	A threshold value(integer)
-
-# check point --->
-# pointX = float(34.8289199)
-# pointY = float(32.0721959)
-# point_output_number = int(5)
-
-# Outputs:
-# list of two dictionaries:
-    # • Dictionary of reference objects relevant to the description of the object
-    # •Dictionary 1: key ---> fid, value ---> point coords
-    # •Dictionary 2: key ---> fid, value ----> data string
-
-
-
-# function adds "Score" field to source layer (Float type) (you need to remove mark to create that field)
-# function creats layer, containing all of interest points
-
 def SelectCandidate(input_layer_path,pointX,pointY,point_output_number):
+    """
+    Essence
+    -------
+    Gong Algorithm - Performs an Intelligent Selection of a Minimal
+    Set of Candidate References for Object Description
+
+    Inputes
+    -------
+
+    :param input_layer_path: Layer path of reference objects (Point type)(.shp)
+    :type String
+
+    :param pointX: the X value of terget point
+    :type float
+
+    :param pointY: the Y value of terget point
+    :type float
+
+    :param point_output_number: A threshold value
+    :type Integer
+
+    Returns
+    -------
+
+    :return:
+    list of two dictionaries:
+    • Dictionary of reference objects relevant to the description of the object
+    • Dictionary 1: key ---> fid, value ---> point coords
+    • Dictionary 2: key ---> fid, value ----> data string
+
+    :type List({},{})
+    """
+
     # opening reference objects layer, Point type
     daShapefile = input_layer_path
     driver = ogr.GetDriverByName('ESRI Shapefile')
@@ -129,3 +134,5 @@ def SelectCandidate(input_layer_path,pointX,pointY,point_output_number):
         #     source_layer.SetFeature(feat)
 
     return ([interest_points,interest_points2])
+
+
